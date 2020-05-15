@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{url_for('static',filename='style.css')}}" />
+    <title>{% block title %}<!-- Placeholder for Title -->{% endblock %} - Jinja Demo </title>
+        {% block head %}
+        <!-- Placeholder for Other Imports -->
+        {% endblock %}
+</head>
+<body>
+    <div id="content">
+        {% block content %}
+        <!-- Placeholder for Page Content -->
+        {% endblock %}
+    </div>
+</body>
