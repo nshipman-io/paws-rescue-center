@@ -16,7 +16,7 @@ def about():
     return render_template("about.html")
 
 @app.route("/details/<int:pet_id>")
-def details(pet_id):
+def pet_details(pet_id):
     pet = next((pet for pet in pets if pet_id is pet["id"]), None)
     if pet is None:
         abort(404, description="No pet with given ID found.")

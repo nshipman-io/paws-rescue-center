@@ -15,7 +15,7 @@ Paws Rescue Center
     </tr>
     {%for pet in pets%}
     <tr>
-        <td><a href="{{url_for('details', pet_id=pet["id"])}}">
+        <td><a href="{{url_for('pet_details', pet_id=pet["id"])}}">
             <img src="{{url_for('static',filename = pet["id"]|string+".jpeg")}}" height="100"></td>
         <td>{{ pet["name"] }}</td>
         <td>{{ pet["age"] }}</td>
