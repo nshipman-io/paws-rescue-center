@@ -7,6 +7,27 @@
         <!-- Placeholder for Other Imports -->
         {% endblock %}
 </head>
+<header>
+    <nav>
+        <div id="main-nav">
+            {% if user %}
+            <ul id="nav-bar">
+                <li class="nav-list"><a href="{{url_for('home')}}">Home</a></li>
+                <li class="nav-list"><a href="{{url_for('about')}}">About</a></li>
+                <li class="nav-list"><a href="{{url_for('signout')}}">Sign out</a></li>
+            </ul>
+            {% else %}
+            <ul id="nav-bar">
+                <li class="nav-list"><a href="{{url_for('home')}}">Home</a></li>
+                <li class="nav-list"><a href="{{url_for('signup')}}">Sign up</a></li>
+                <li class="nav-list"><a href="{{url_for('signin')}}">Sign in</a></li>
+                <li class="nav-list"><a href="{{url_for('about')}}">About</a></li>
+            </ul>
+            {% endif %}
+        </div>
+    </nav>
+    <br>
+</header>
 <body>
     <div id="heading"><h1>{% block heading %}{% endblock %}</h1></div>
     <div id="content">
