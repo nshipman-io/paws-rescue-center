@@ -8,34 +8,60 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///paws.db'
 db = SQLAlchemy(app)
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String(25), unique=True, nullable=False)
     password = db.Column(db.String(35), nullable=False)
     full_name = db.Column(db.String, nullable=False)
     pets = db.relationship('Pet', backref='user')
 
 class Pet(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)
     age = db.Column(db.String, nullable=False)
-    bio = db.Column(db.Text)
+    bio = db.Column(db.String)
     posted_by = db.Column(db.String, db.ForeignKey('user.id'))
 
 db.create_all()
 
-pets = [
-        {"id": 1, "name": "Nelly", "age": "5 weeks", "bio": "I am a tiny kitten rescued by the good people at Paws Rescue Center. I love squeaky toys and cuddles."},
-        {"id": 2, "name": "Yuki", "age": "8 months", "bio": "I am a handsome gentle-cat. I like to dress up in bow ties."},
-        {"id": 3, "name": "Basker", "age": "1 year", "bio": "I love barking. But, I love my friends more."},
-        {"id": 4, "name": "Mr. Furrkins", "age": "5 years", "bio": "Probably napping."}, 
-    ]
+#pets = [
+#        {"id": 1, "name": "Nelly", "age": "5 weeks", "bio": "I am a tiny kitten rescued by the good people at Paws Rescue Center. I love squeaky toys and cuddles."},
+#        {"id": 2, "name": "Yuki", "age": "8 months", "bio": "I am a handsome gentle-cat. I like to dress up in bow ties."},
+#        {"id": 3, "name": "Basker", "age": "1 year", "bio": "I love barking. But, I love my friends more."},
+#        {"id": 4, "name": "Mr. Furrkins", "age": "5 years", "bio": "Probably napping."}, 
+#    ]
 
 #users = [
 #         {"id": 1, "full_name": "Pet Rescue Team", "email": "team@pawsrescue.com", "password": "adminpass"},
 #    ]
+team = User(full_name="Pet Rescue Team", email="team@pawsrescue.com", password="adminpass")
+#for pet in pets:
+#    new_pet = Pet(name=pet["name"],age=pet["age"],bio=pet["bio"])
+#    db.session.add(new_pet)
+nelly = Pet(name = "Nelly", age = "5 weeks", bio = "I am a tiny kitten rescued by the good people at Paws Rescue Center. I love squeaky toys and cuddles.")
+yuki = Pet(name = "Yuki", age = "8 months", bio = "I am a handsome gentle-cat. I like to dress up in bow ties.")
+basker = Pet(name = "Basker", age = "1 year", bio = "I love barking. But, I love my friends more.")
+mrfurrkins = Pet(name = "Mr. Furrkins", age = "5 years", bio = "Probably napping.")
+
+db.session.add(team)
+db.session.add(nelly)
+db.session.add(yuki)
+db.session.add(basker)
+db.session.add(mrfurrkins)
+
+try:
+    db.session.commit()
+except Exception as e:
+    print(e)
+finally:
+    db.session.close()
 
 @app.route("/")
 def home():
+    pet_query = Pet.query.all()
+    pets = []
+    for pet_obj in pet_query:
+       pet = {"id":pet_obj.id,"name":pet_obj.name,"age":pet_obj.age,"bio":pet_obj.bio}
+       pets.append(pet)
     return render_template("home.html",pets=pets)
     
 @app.route("/about")
