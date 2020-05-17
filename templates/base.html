@@ -10,7 +10,7 @@
 <header>
     <nav>
         <div id="main-nav">
-            {% if user %}
+            {% if 'USERNAME' in session %}
             <ul id="nav-bar">
                 <li class="nav-list"><a href="{{url_for('home')}}">Home</a></li>
                 <li class="nav-list"><a href="{{url_for('about')}}">About</a></li>

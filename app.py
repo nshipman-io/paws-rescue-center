@@ -16,15 +16,11 @@ users = [
 
 @app.route("/")
 def home():
-    if 'USERNAME' in session:
-        return render_template("home.html",pets=pets,user=session["USERNAME"])
 
     return render_template("home.html",pets=pets)
     
 @app.route("/about")
 def about():
-    if 'USERNAME' in session:
-        return render_template("about.html",pets=pets,user=session["USERNAME"])
     return render_template("about.html")
 
 @app.route("/details/<int:pet_id>")
@@ -33,8 +29,6 @@ def pet_details(pet_id):
     if pet is None:
         abort(404, description="No pet with given ID found.")
 
-    if 'USERNAME' in session:
-        return render_template("details.html",pet=pet,user=session["USERNAME"])
     return render_template("details.html",pet=pet)
 
 @app.route("/signup",methods=["GET","POST"])
