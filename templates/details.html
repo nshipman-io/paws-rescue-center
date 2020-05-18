@@ -1,14 +1,40 @@
 {% extends "base.html" %}
 {% block title %}
-{{ pet["name"] }}'s Details - Paws Rescue Center
+{{ pet.name }}'s Details - Paws Rescue Center
 {% endblock %}
 {% block content%}
-<div id="image" style="float:left; border-style:double;">
-    <img src="{{url_for('static',filename = pet["id"]|string+".jpeg")}}">
-</div>
-<div id="details" style="float:left; border-style:double;">
-    <h1 class="title">{{ pet["name"] }}</h1>
-    <p><strong>Age:</strong> {{ pet["age"] }}</p>
-    <p><strong>Bio:</strong> {{ pet["bio"] }}</p>
-</div>
+    <div id="image" style="float:left; border-style:double;">
+        <img src="{{url_for('static',filename = pet.id|string+".jpeg")}}" height="350"><br>
+        {% if 'USERID' in session %}
+        <button style="background-color:tomato" onclick="location.href='{{ url_for('delete_pet', pet_id = pet.id)}}'"> Delete Pet </button>
+        {% endif %}
+    </div>
+    <div id="details" style="float:left; margin:10px;">
+        <h1 class="title">{{ pet["name"] }}</h1>
+        <p><strong>Age:</strong> {{ pet.age }}</p>
+        <p><strong>Bio:</strong> {{ pet.bio }}</p>
+    <hr>
+    {% if 'USERID' in session %}
+    <h2>Edit Pet</h1>
+    {% if message %}
+    <span style="background-color:tomato">
+        {{ message }}
+    <span>
+    <br>
+    {% endif %}
+    <form action="{{url_for('pet_details', pet_id=pet.id)}}" method="POST" style="padding:5px;">
+        {{ form.name.label }}: <br>
+        {{ form.name }}
+        <br>
+        {{ form.age.label }}: <br>
+        {{ form.age }}
+        <br>
+        {{ form.bio.label }}: <br>
+        {{ form.bio }}
+        <br>
+        {{ form.csrf_token }}
+        {{ form.submit }}
+    </form>
+    {% endif %}
+    </div>
 {% endblock %}

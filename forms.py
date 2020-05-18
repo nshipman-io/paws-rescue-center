@@ -13,3 +13,9 @@ class SignInForm(FlaskForm):
     email = StringField('Email', validators=[InputRequired(),Email(),Length(min=4,max=25)])
     password = PasswordField('Password', validators=[InputRequired(),Length(min=6,max=35)])
     submit = SubmitField('Sign In')
+
+class EditPetForm(FlaskForm):
+    name = StringField("Pet's Name", validators = [InputRequired()])
+    age = StringField("Pet's Age", validators = [InputRequired()])
+    bio = StringField("Pet's Bio", validators = [InputRequired()])
+    submit = SubmitField("Edit Pet")

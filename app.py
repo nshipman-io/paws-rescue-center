@@ -1,6 +1,7 @@
 from flask import Flask, render_template, abort, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from forms import SignUpForm, SignInForm
+from forms import SignUpForm, SignInForm, EditPetForm
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "KfbFLD5f545p5Vo5FANe4jyV"
@@ -23,20 +24,7 @@ class Pet(db.Model):
 
 db.create_all()
 
-#pets = [
-#        {"id": 1, "name": "Nelly", "age": "5 weeks", "bio": "I am a tiny kitten rescued by the good people at Paws Rescue Center. I love squeaky toys and cuddles."},
-#        {"id": 2, "name": "Yuki", "age": "8 months", "bio": "I am a handsome gentle-cat. I like to dress up in bow ties."},
-#        {"id": 3, "name": "Basker", "age": "1 year", "bio": "I love barking. But, I love my friends more."},
-#        {"id": 4, "name": "Mr. Furrkins", "age": "5 years", "bio": "Probably napping."}, 
-#    ]
-
-#users = [
-#         {"id": 1, "full_name": "Pet Rescue Team", "email": "team@pawsrescue.com", "password": "adminpass"},
-#    ]
 team = User(full_name="Pet Rescue Team", email="team@pawsrescue.com", password="adminpass")
-#for pet in pets:
-#    new_pet = Pet(name=pet["name"],age=pet["age"],bio=pet["bio"])
-#    db.session.add(new_pet)
 nelly = Pet(name = "Nelly", age = "5 weeks", bio = "I am a tiny kitten rescued by the good people at Paws Rescue Center. I love squeaky toys and cuddles.")
 yuki = Pet(name = "Yuki", age = "8 months", bio = "I am a handsome gentle-cat. I like to dress up in bow ties.")
 basker = Pet(name = "Basker", age = "1 year", bio = "I love barking. But, I love my friends more.")
@@ -70,19 +58,40 @@ def about():
 
 @app.route("/details/<int:pet_id>")
 def pet_details(pet_id):
-    pet = next((pet for pet in pets if pet_id is pet["id"]), None)
+    form = EditPetForm()
+    pet = Pet.query.get(pet_id)
     if pet is None:
         abort(404, description="No pet with given ID found.")
+    if form.validate_on_submit():
+        pet.name = form.name.data
+        pet.age = form.age.data
+        pet.bio = form.pet.bio
+        try:
+            db.session.commit()
+        except Exception as e:
+            print(e)
+            db.session.rollback()
+            render_template("details.html",pet = pet,form = form,message="A Pet with this name already exists!")
+    return render_template("details.html",pet=pet,form=form)
 
-    return render_template("details.html",pet=pet)
-
+@app.route("/delete/<int:pet_id>")
+def delete_pet(pet_id):
+    pet = pet.query.get(pet_id)
+    if pet is None:
+        abort(404, description="No pet with given ID found.")
+    db.session.delete(pet)
+    try:
+        db.session.commit()
+    except Exception as e:
+        print(e)
+        db.session.rollback()
+    return redirect(url_for('homepage.html'))
+    
 @app.route("/signup",methods=["GET","POST"])
 def signup():
     form = SignUpForm()
     if form.validate_on_submit():
         print("Form submitted and Valid")
-        #user = {"id":len(users)+1, "full_name":form.name.data, "email":form.email.data, "password":form.password.data}
-        #users.append(user)
         new_user = User(email=form.email.data,password=form.password.data,full_name=form.name.data)
         db.session.add(new_user)
         try:
@@ -102,22 +111,6 @@ def signup():
 def signin():
     form = SignInForm()
     if form.validate_on_submit():
-        #session_user = None
-        #i = 0
-        #while session_user is None and i < len(users):
-        #    user = users[i]
-        #    if form.email.data == user["email"]:
-        #        session_user = user
-        #    else:
-        #        i+=1
-        #if session_user is None:
-        #    return render_template("signin.html",message="Email not found",form=form)
-        #if form.password.data != session_user["password"]:
-        #    print(f'Wrong password entered for user: {session_user["email"]}')
-        #    return render_template("signin.html",message="Wrong password",form=form)
-        #else:
-        #    session["USERNAME"] = session_user["full_name"]
-        #    return redirect(url_for('home'))
         user = User.query.filter_by(email = form.email.data).first()
         if user is None:
             return render_template("signin.html",message="Email not found",form=form)
